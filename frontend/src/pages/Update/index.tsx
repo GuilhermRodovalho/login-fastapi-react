@@ -1,8 +1,9 @@
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useCallback, useContext, useEffect, useRef} from 'react';
 import * as Yup from 'yup';
 
 import { CardContent, Container, Card } from './styles'
 
+import { AuthContext } from '../../context/AuthContext';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 
@@ -17,6 +18,7 @@ export const Update: React.FC = () => {
   const navigate = useNavigate();
   const [userCookie, setCookie] = useCookies(["user"]);
   const [tokenCookie, setTokenCookie] = useCookies(["token"]);
+  const { logout } = useContext(AuthContext);
 
   useEffect(() => {
     api.get("/users/me", {
@@ -48,12 +50,15 @@ export const Update: React.FC = () => {
 
       await schema.validate(data, {abortEarly: false});
 
-      // add request para api atualizar os dados do usuário.
       await api.put("/users/me", data, { 
         headers: {"Authorization" : `Bearer ${tokenCookie.token}`}
-      }).then(res =>{
-        console.log(res)
       });
+
+      // Opções:
+      // [ ] - gerar um novo token no backend e setar no cookie quando alterar os dados
+      // [X] - deslogar o usuário depois das alterações
+
+      logout();
 
       navigate("/");
       

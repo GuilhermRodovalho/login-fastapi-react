@@ -88,7 +88,4 @@ def update(data: schemas.UpdateUser, email: str, db: Session):
     else:
         db.commit()
 
-    print(data.__dict__)
-    print(users_updated)
-
     return data
